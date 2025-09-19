@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExpenseTracker - Personal Finance Management</title>
+    <meta name="description" content="Track and manage your personal expenses with ease">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/app.js"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Removed Firebase auth and loading screen, simplified to direct dashboard -->
+    <!-- Dashboard Section -->
+    <div id="dashboard-container" class="dashboard-container">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="header-content">
+                <h1>💰 ExpenseTracker</h1>
+                <div class="header-actions">
+                    <button id="export-btn" class="btn btn-secondary">Export Data</button>
+                    <button id="theme-toggle" class="btn btn-secondary">🌙</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+            <!-- Summary Cards -->
+            <section class="summary-section">
+                <div class="summary-cards">
+                    <div class="summary-card">
+                        <div class="card-header">
+                            <h3>Total Expenses</h3>
+                            <span class="card-icon">💰</span>
+                        </div>
+                        <div class="card-value">
+                            <span id="total-expenses">$0.00</span>
+                            <span id="total-change" class="change-indicator">+0%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="summary-card">
+                        <div class="card-header">
+                            <h3>This Month</h3>
+                            <span class="card-icon">📅</span>
+                        </div>
+                        <div class="card-value">
+                            <span id="month-expenses">$0.00</span>
+                            <span id="month-change" class="change-indicator">+0%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="summary-card">
+                        <div class="card-header">
+                            <h3>Average Daily</h3>
+                            <span class="card-icon">📊</span>
+                        </div>
+                        <div class="card-value">
+                            <span id="daily-average">$0.00</span>
+                            <span id="daily-change" class="change-indicator">+0%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="summary-card">
+                        <div class="card-header">
+                            <h3>Categories</h3>
+                            <span class="card-icon">🏷️</span>
+                        </div>
+                        <div class="card-value">
+                            <span id="category-count">0</span>
+                            <span class="change-indicator">active</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Charts Section -->
+            <section class="charts-section">
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <h3>📈 Expense Trends</h3>
+                        <canvas id="trends-chart"></canvas>
+                    </div>
+                    
+                    <div class="chart-card">
+                        <h3>🥧 Category Breakdown</h3>
+                        <canvas id="category-chart"></canvas>
+                    </div>
+                    
+                    <div class="chart-card full-width">
+                        <h3>📊 Monthly Comparison</h3>
+                        <canvas id="comparison-chart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Expense Management Section -->
+            <section class="expense-section">
+                <div class="section-header">
+                    <h2>Recent Expenses</h2>
+                    <button id="add-expense-btn" class="btn btn-primary">+ Add Expense</button>
+                </div>
+                
+                <!-- Filters -->
+                <div class="filters">
+                    <input type="text" id="search-input" placeholder="🔍 Search expenses...">
+                    <select id="category-filter">
+                        <option value="">All Categories</option>
+                        <option value="food">🍎 Food & Dining</option>
+                        <option value="transport">🚗 Transportation</option>
+                        <option value="shopping">🛍️ Shopping</option>
+                        <option value="entertainment">🎬 Entertainment</option>
+                        <option value="bills">💡 Bills & Utilities</option>
+                        <option value="health">🏥 Healthcare</option>
+                        <option value="other">📦 Other</option>
+                    </select>
+                    <input type="date" id="date-filter">
+                </div>
+                
+                <!-- Expense List -->
+                <div id="expense-list" class="expense-list">
+                    <div class="empty-state">
+                        <p>No expenses found. Add your first expense to get started! 🚀</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Add Expense Modal -->
+    <div id="expense-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Add Expense</h3>
+                <button id="close-modal" class="close-btn">&times;</button>
+            </div>
+            
+            <form id="expense-form">
+                <div class="form-group">
+                    <label for="expense-description">Description</label>
+                    <input type="text" id="expense-description" placeholder="e.g., Lunch at restaurant" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="expense-amount">Amount ($)</label>
+                    <input type="number" id="expense-amount" step="0.01" min="0" placeholder="0.00" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="expense-category">Category</label>
+                    <select id="expense-category" required>
+                        <option value="">Select Category</option>
+                        <option value="food">🍎 Food & Dining</option>
+                        <option value="transport">🚗 Transportation</option>
+                        <option value="shopping">🛍️ Shopping</option>
+                        <option value="entertainment">🎬 Entertainment</option>
+                        <option value="bills">💡 Bills & Utilities</option>
+                        <option value="health">🏥 Healthcare</option>
+                        <option value="other">📦 Other</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="expense-date">Date</label>
+                    <input type="date" id="expense-date" required>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" id="cancel-btn" class="btn btn-secondary">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Expense</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Success Toast -->
+    <div id="success-toast" class="toast success hidden">
+        <span id="success-message"></span>
+        <button id="close-success" class="close-btn">&times;</button>
+    </div>
+
+    <!-- Error Toast -->
+    <div id="error-toast" class="toast error hidden">
+        <span id="error-message"></span>
+        <button id="close-error" class="close-btn">&times;</button>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="app.js"></script>
+</body>
+</html>
